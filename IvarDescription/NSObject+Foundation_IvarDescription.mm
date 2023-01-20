@@ -7,7 +7,6 @@
 
 #import "NSObject+Foundation_IvarDescription.h"
 #import <objc/runtime.h>
-#import <string>
 
 @implementation NSObject (Foundation_IvarDescription)
 
