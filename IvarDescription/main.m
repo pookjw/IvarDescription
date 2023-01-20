@@ -5,12 +5,12 @@
 //  Created by Jinwoo Kim on 1/15/23.
 //
 
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 #import "NSObject+Foundation_IvarDescription.h"
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
-        NSLog(@"%@", [NSInputStream _fd_shortMethodDescription]);
+        NSLog(@"%@", [NSView _fd_shortMethodDescription]);
 //        char *id_encoded = @encode(id);
 //        NSLog(@"%s", id_encoded);
 //

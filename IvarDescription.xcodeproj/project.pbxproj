@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4F60546A2973EDC100AF6187 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F6054692973EDC100AF6187 /* main.m */; };
-		4F9B723B2976BBC500F55256 /* NSObject+Foundation_IvarDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F9B723A2976BBC500F55256 /* NSObject+Foundation_IvarDescription.m */; };
+		4F9B723B2976BBC500F55256 /* NSObject+Foundation_IvarDescription.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4F9B723A2976BBC500F55256 /* NSObject+Foundation_IvarDescription.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -27,7 +27,7 @@
 		4F6054662973EDC100AF6187 /* IvarDescription */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = IvarDescription; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F6054692973EDC100AF6187 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		4F9B72392976BBC500F55256 /* NSObject+Foundation_IvarDescription.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSObject+Foundation_IvarDescription.h"; sourceTree = "<group>"; };
-		4F9B723A2976BBC500F55256 /* NSObject+Foundation_IvarDescription.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSObject+Foundation_IvarDescription.m"; sourceTree = "<group>"; };
+		4F9B723A2976BBC500F55256 /* NSObject+Foundation_IvarDescription.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSObject+Foundation_IvarDescription.mm"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,7 +62,7 @@
 			children = (
 				4F6054692973EDC100AF6187 /* main.m */,
 				4F9B72392976BBC500F55256 /* NSObject+Foundation_IvarDescription.h */,
-				4F9B723A2976BBC500F55256 /* NSObject+Foundation_IvarDescription.m */,
+				4F9B723A2976BBC500F55256 /* NSObject+Foundation_IvarDescription.mm */,
 			);
 			path = IvarDescription;
 			sourceTree = "<group>";
@@ -125,7 +125,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4F60546A2973EDC100AF6187 /* main.m in Sources */,
-				4F9B723B2976BBC500F55256 /* NSObject+Foundation_IvarDescription.m in Sources */,
+				4F9B723B2976BBC500F55256 /* NSObject+Foundation_IvarDescription.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
