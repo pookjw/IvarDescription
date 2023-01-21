@@ -8,14 +8,24 @@
 #import <Cocoa/Cocoa.h>
 #import "NSObject+Foundation_IvarDescription.h"
 
+@interface TestObject : NSObject
+@property (class, readonly) NSUInteger number;
+- (oneway void)foo;
+@end
+
+@implementation TestObject
+
++ (NSUInteger)number {
+    return 0;
+}
+- (oneway void)foo {
+//    return @"";
+}
+@end
+
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
-        NSLog(@"%@", [NSView _fd_shortMethodDescription]);
-//        char *id_encoded = @encode(id);
-//        NSLog(@"%s", id_encoded);
-//
-//        char *bool_encoded = @encode(_Bool);
-//        NSLog(@"%s", bool_encoded);
+        NSLog(@"%@", [NSAttributedString _fd__methodDescriptionForClass:NSAttributedString.class]);
     }
     return 0;
 }

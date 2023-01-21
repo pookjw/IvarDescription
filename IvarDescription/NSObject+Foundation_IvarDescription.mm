@@ -11,164 +11,200 @@
 @implementation NSObject (Foundation_IvarDescription)
 
 - (NSString *)_fd_shortMethodDescription {
-    NSString *classMethods = [self _fd_classMethodsForClass:self.class];
-    NSString *instanceMethods = [self _fd_instanceMethodsForClass:self.class];
-    NSLog(@"%@", [self _fd_propertiesForClass:self.class]);
+    NSString * _Nullable classMethods = [self _fd_methodsForClass:object_getClass(self.class) isClassType:YES];
+    NSString * _Nullable classProperties = [self _fd_propertiesForClass:object_getClass(self.class) isClassType:YES];
+    NSString * _Nullable instanceProperties = [self _fd_propertiesForClass:self.class isClassType:NO];
+    NSString * _Nullable instanceMethods = [self _fd_methodsForClass:self.class isClassType:NO];
     
-    NSString *result = [NSString stringWithFormat:@"\
-<%@: %p>:\n\
-in %@:\n\
-\tClass Methods::\n\
-%@\n\
-\tInstance Methods:\n\
-%@\
-", self, self, self, classMethods, instanceMethods];
+    NSString *description = [self _fd_descriptionForClass:self.class
+                                       classMethodsString:classMethods
+                                    classPropertiesString:classProperties
+                                 instancePropertiesString:instanceProperties
+                                    instanceMethodsString:instanceMethods];
     
     if (self.superclass) {
-        return [NSString stringWithFormat:@"%@\n(%@ ...)", result, self.superclass];
+        return [NSString stringWithFormat:@"%@\n(%@ ...)", description, self.superclass];
     } else {
-        return result;
+        return description;
     }
+}
+
+- (NSString *)_fd_methodDescription {
+    return [self _fd__methodDescriptionForClass:self.class];
+}
+
+- (NSString *)_fd__methodDescriptionForClass:(Class)arg1 {
+    Class loopClass = arg1;
+    
+    NSMutableString *result = [NSMutableString string];
+    
+    while (loopClass) {
+        NSString * _Nullable classMethods = [self _fd_methodsForClass:object_getClass(loopClass) isClassType:YES];
+        NSString * _Nullable classProperties = [self _fd_propertiesForClass:object_getClass(loopClass) isClassType:YES];
+        NSString * _Nullable instanceProperties = [self _fd_propertiesForClass:loopClass isClassType:NO];
+        NSString * _Nullable instanceMethods = [self _fd_methodsForClass:loopClass isClassType:NO];
+        
+        NSString *description = [self _fd_descriptionForClass:loopClass
+                                           classMethodsString:classMethods
+                                        classPropertiesString:classProperties
+                                     instancePropertiesString:instanceProperties
+                                        instanceMethodsString:instanceMethods];
+        
+        [result appendString:description];
+        
+        loopClass = loopClass.superclass;
+    }
+    
+    return [result copy];
 }
 
 #pragma mark - Helpers
 
-- (NSString *)_fd_classMethodsForClass:(Class)arg1 {
-    return [self _fd_methodsForClass:object_getClass(arg1) prefix:@"+"];
-}
-
-- (NSString *)_fd_instanceMethodsForClass:(Class)arg1 {
-    return [self _fd_methodsForClass:arg1 prefix:@"-"];
-}
-
-- (NSString *)_fd_methodsForClass:(Class)arg1 prefix:(NSString *)prefix {
+- (NSString * _Nullable)_fd_methodsForClass:(Class)arg1 isClassType:(BOOL)isClassType {
     unsigned int *methodsCount = new unsigned int;
     Method *methods = class_copyMethodList(arg1, methodsCount);
     
-    NSMutableString *results = [NSMutableString new];
+    if (*methodsCount == 0) {
+        delete methodsCount;
+        return nil;
+    }
+    
+    NSString *prefix = isClassType ? @"+" : @"-";
+    NSMutableString *results = [NSMutableString string];
     
     for (unsigned int methodIndex = 0; methodIndex < *methodsCount; methodIndex++) {
-        NSAutoreleasePool *pool = [NSAutoreleasePool new];
-        
-        Method method = methods[methodIndex];
-        IMP imp = method_getImplementation(method);
-        
-        NSString *name = NSStringFromSelector(method_getName(method));
-        
-        char *returnType_char = new char[256];
-        method_getReturnType(methods[methodIndex], returnType_char, 256);
-        NSString *returnType = [self _fd_decodeType:returnType_char];
-        delete[] returnType_char;
-        
-        NSMutableArray<NSString *> *arguments = [NSMutableArray<NSString *> array];
-        for (unsigned int argumentIndex = 0; argumentIndex < method_getNumberOfArguments(method); argumentIndex++) {
-            char *argument_char = new char[256];
-            method_getArgumentType(methods[methodIndex], argumentIndex, argument_char, 256);
-            [arguments addObject:[self _fd_decodeType:argument_char]];
-            delete[] argument_char;
+        @autoreleasepool {
+            Method method = methods[methodIndex];
+            IMP imp = method_getImplementation(method);
+            
+            NSString *name = NSStringFromSelector(method_getName(method));
+            
+            char *returnType_char = new char[256];
+            method_getReturnType(methods[methodIndex], returnType_char, 256);
+            NSString *returnType = [self _fd_decodeType:returnType_char];
+            delete[] returnType_char;
+            
+            NSMutableArray<NSString *> *arguments = [NSMutableArray<NSString *> array];
+            for (unsigned int argumentIndex = 0; argumentIndex < method_getNumberOfArguments(method); argumentIndex++) {
+                char *argument_char = new char[256];
+                method_getArgumentType(methods[methodIndex], argumentIndex, argument_char, 256);
+                [arguments addObject:[self _fd_decodeType:argument_char]];
+                delete[] argument_char;
+            }
+            
+            NSMutableString *result = [NSMutableString stringWithFormat:@"\t\t%@ (%@)", prefix, returnType];
+            
+            if (arguments.count == 2) {
+                [result appendFormat:@" %@", name];
+            } else {
+                [[name componentsSeparatedByString:@":"] enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    if (obj.length == 0) {
+                        *stop = YES;
+                        return;
+                    }
+                    
+                    [result appendFormat:@" %@:(%@)arg%lu", obj, arguments[idx + 2], idx + 1];
+                }];
+            }
+            
+            [result appendFormat:@"; (%p)", imp];
+            [results appendString:result];
+            
+            if (methodIndex < (*methodsCount - 1)) {
+                [results appendString:@"\n"];
+            }
         }
-        
-        NSMutableString *result = [NSMutableString stringWithFormat:@"\t\t%@ (%@)", prefix, returnType];
-        
-        if (arguments.count == 2) {
-            [result appendFormat:@" %@", name];
-        } else {
-            [[name componentsSeparatedByString:@":"] enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                if (obj.length == 0) {
-                    *stop = YES;
-                    return;
-                }
-                
-                [result appendFormat:@" %@:(%@)arg%lu", obj, arguments[idx + 2], idx + 1];
-            }];
-        }
-        
-        [result appendFormat:@"; (%p)", imp];
-        [results appendString:result];
-        
-        if (methodIndex < (*methodsCount - 1)) {
-            [results appendString:@"\n"];
-        }
-        
-        [pool release];
     }
     
     delete methodsCount;
     delete methods;
     
-    NSString *copy = [results copy];
-    [results release];
-    
-    return [copy autorelease];
+    return [results copy];
 }
 
-- (NSString *)_fd_propertiesForClass:(Class)arg1 {
+- (NSString * _Nullable)_fd_propertiesForClass:(Class)arg1 isClassType:(BOOL)isClassType {
     unsigned int *propertiesCount = new unsigned int;
     objc_property_t *properties = class_copyPropertyList(arg1, propertiesCount);
     
-    NSMutableString *results = [NSMutableString new];
+    if (*propertiesCount == 0) {
+        delete propertiesCount;
+        return nil;
+    }
+    
+    NSMutableString *results = [NSMutableString string];
     
     for (unsigned int propertyIndex = 0; propertyIndex < *propertiesCount; propertyIndex++) {
-        objc_property_t property = properties[propertyIndex];
-        
-        NSString *name = [NSString stringWithCString:property_getName(property) encoding:NSUTF8StringEncoding];
-        
-        unsigned int *attributesCount = new unsigned int;
-        objc_property_attribute_t *attributes = property_copyAttributeList(property, attributesCount);
-        
-        NSMutableArray<NSString *> *attributeNames = [NSMutableArray<NSString *> new];
-        NSString * __autoreleasing _Nullable typeName = nil;
-        NSString * __autoreleasing _Nullable dynamicName = nil;
-        
-        for (unsigned int attributeIndex = 0; attributeIndex < *attributesCount; attributeIndex++) {
-            objc_property_attribute_t attribute = attributes[attributeIndex];
+        @autoreleasepool {
+            objc_property_t property = properties[propertyIndex];
             
-            // https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtPropertyIntrospection.html#//apple_ref/doc/uid/TP40008048-CH101
-            if (strcmp(attribute.name, "T") == 0) {
-                typeName = [self _fd_decodeType:attribute.value];
-            } else if (strcmp(attribute.name, "R") == 0) {
-                [attributeNames addObject:@"readonly"];
-            } else if (strcmp(attribute.name, "C") == 0) {
-                [attributeNames addObject:@"copy"];
-            } else if (strcmp(attribute.name, "&") == 0) {
-                [attributeNames addObject:@"retain"];
-            } else if (strcmp(attribute.name, "N") == 0) {
-                [attributeNames addObject:@"nonatomic"];
-            } else if (strcmp(attribute.name, "G") == 0) {
-                NSString *getterName = [NSString stringWithCString:attribute.value encoding:NSUTF8StringEncoding];
-                [attributeNames addObject:[NSString stringWithFormat:@"getter=%@", getterName]];
-            } else if (strcmp(attribute.name, "S") == 0) {
-                NSString *setterName = [NSString stringWithCString:attribute.value encoding:NSUTF8StringEncoding];
-                [attributeNames addObject:[NSString stringWithFormat:@"setter=%@", setterName]];
+            NSString *name = [NSString stringWithCString:property_getName(property) encoding:NSUTF8StringEncoding];
+            
+            unsigned int *attributesCount = new unsigned int;
+            objc_property_attribute_t *attributes = property_copyAttributeList(property, attributesCount);
+            
+            NSMutableArray<NSString *> *attributeNames = [NSMutableArray<NSString *> array];
+            
+            if (isClassType) {
+                [attributeNames addObject:@"class"];
+            }
+            
+            NSString * __autoreleasing _Nullable typeName = nil;
+            BOOL isDynamic = NO;
+            
+            for (unsigned int attributeIndex = 0; attributeIndex < *attributesCount; attributeIndex++) {
+                objc_property_attribute_t attribute = attributes[attributeIndex];
+                
+                // https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtPropertyIntrospection.html#//apple_ref/doc/uid/TP40008048-CH101
+                if (strcmp(attribute.name, "T") == 0) {
+                    typeName = [self _fd_decodeType:attribute.value];
+                } else if (strcmp(attribute.name, "R") == 0) {
+                    [attributeNames addObject:@"readonly"];
+                } else if (strcmp(attribute.name, "C") == 0) {
+                    [attributeNames addObject:@"copy"];
+                } else if (strcmp(attribute.name, "&") == 0) {
+                    [attributeNames addObject:@"retain"];
+                } else if (strcmp(attribute.name, "N") == 0) {
+                    [attributeNames addObject:@"nonatomic"];
+                } else if (strcmp(attribute.name, "G") == 0) {
+                    NSString *getterName = [NSString stringWithCString:attribute.value encoding:NSUTF8StringEncoding];
+                    [attributeNames addObject:[NSString stringWithFormat:@"getter=%@", getterName]];
+                } else if (strcmp(attribute.name, "S") == 0) {
+                    NSString *setterName = [NSString stringWithCString:attribute.value encoding:NSUTF8StringEncoding];
+                    [attributeNames addObject:[NSString stringWithFormat:@"setter=%@", setterName]];
+                } else if (strcmp(attribute.name, "D") == 0) {
+                    isDynamic = YES;
+                } else if (strcmp(attribute.name, "W") == 0) {
+                    [attributeNames addObject:@"weak"];
+                }
+            }
+            
+            delete attributesCount;
+            delete attributes;
+            
+            if (name == nil) {
+                name = [NSString stringWithCString:property_getName(property) encoding:NSUTF8StringEncoding];
+            }
+            
+            if (attributeNames.count) {
+                [results appendFormat:@"\t\t@property (%@) %@ %@;", [attributeNames componentsJoinedByString:@", "], typeName, name];
+            } else {
+                [results appendFormat:@"\t\t@property %@ %@;", typeName, name];
+            }
+            
+            if (isDynamic) {
+                [results appendFormat:@"  (@dynamic %@;)", name];
+            }
+            
+            if (propertyIndex < (*propertiesCount - 1)) {
+                [results appendString:@"\n"];
             }
         }
-        
-        if (name == nil) {
-            name = [NSString stringWithCString:property_getName(property) encoding:NSUTF8StringEncoding];
-        }
-        
-        if (attributeNames.count) {
-            [results appendFormat:@"\t\t@property (%@) %@ %@;", [attributeNames componentsJoinedByString:@", "], typeName, name];
-        } else {
-            [results appendFormat:@"\t\t@property %@ %@;", typeName, name];
-        }
-        
-        if (propertyIndex < (*propertiesCount - 1)) {
-            [results appendString:@"\n"];
-        }
-        
-        [attributeNames release];
-        delete attributesCount;
-        delete attributes;
     }
     
     delete propertiesCount;
     delete properties;
     
-    NSString *copy = [results copy];
-    [results release];
-    
-    return [copy autorelease];
+    return [results copy];
 }
 
 - (NSString *)_fd_decodeType:(const char *)encodedType {
@@ -209,16 +245,8 @@ in %@:\n\
         return @"Class";
     } else if (strcmp(encodedType, @encode(SEL)) == 0) {
         return @"SEL";
-    } else if (strstr(encodedType, "{") && strstr(encodedType, "=") && strstr(encodedType, "}")) {
-        NSString *string = [NSString stringWithCString:encodedType encoding:NSUTF8StringEncoding];
-        NSRange startRange = [string rangeOfString:@"{"];
-        NSRange endRange = [string rangeOfString:@"="];
-        NSString *typeName = [string substringWithRange:NSMakeRange(startRange.location + startRange.length, endRange.location - (startRange.location + startRange.length))];
-        
-        return [NSString stringWithFormat:@"struct %@", typeName];
     } else if (strncmp("^", encodedType, 1) == 0) {
-        char *token = strtok(const_cast<char *>(encodedType), "^");
-        return [NSString stringWithFormat:@"%@*", [self _fd_decodeType:token]];
+        return [NSString stringWithFormat:@"%@*", [self _fd_decodeType:encodedType + 1]];
     } else if (strcmp(encodedType, "@?") == 0) {
         return @"^block";
     } else if (strstr(encodedType, "@") && strstr(encodedType, "\"") && strstr(encodedType, "\"")) {
@@ -229,10 +257,54 @@ in %@:\n\
         NSString *typeName = [trimmedString substringWithRange:NSMakeRange(0, trimmedString.length - endRange.length)];
         
         return [NSString stringWithFormat:@"%@*", typeName];
+    } else if (strncmp("r", encodedType, 1) == 0) {
+        return [NSString stringWithFormat:@"const %@", [self _fd_decodeType:encodedType + 1]];
+    } else if (strncmp("V", encodedType, 1) == 0) {
+        return [NSString stringWithFormat:@"oneway %@", [self _fd_decodeType:encodedType + 1]];
+    } else if (strstr(encodedType, "{") && strstr(encodedType, "}")) {
+        if (strstr(encodedType, "=")) {
+            NSString *string = [NSString stringWithCString:encodedType encoding:NSUTF8StringEncoding];
+            NSRange startRange = [string rangeOfString:@"{"];
+            NSRange endRange = [string rangeOfString:@"="];
+            NSString *typeName = [string substringWithRange:NSMakeRange(startRange.location + startRange.length, endRange.location - (startRange.location + startRange.length))];
+            
+            return [NSString stringWithFormat:@"struct %@", typeName];
+        } else {
+            size_t size = strlen(encodedType) - 2;
+            char splited[size];
+            strncpy(splited, (encodedType + 1), size);
+            
+            return [self _fd_decodeType:splited];
+        }
     } else {
-        NSLog(@"%s", encodedType);
         return [NSString stringWithCString:encodedType encoding:NSUTF8StringEncoding];
     }
+}
+
+- (NSString *)_fd_descriptionForClass:(Class)arg1 classMethodsString:(NSString * _Nullable)classMethodsString classPropertiesString:(NSString * _Nullable)classPropertiesString instancePropertiesString:(NSString *)instancePropertiesString instanceMethodsString:(NSString *)instanceMethodsString {
+    NSMutableString *result = [NSMutableString stringWithFormat:@"<%@: %p>:\nin %@:", arg1, arg1, arg1];
+    
+    if (classMethodsString) {
+        [result appendFormat:@"\n\tClass Methods:\n%@", classMethodsString];
+    }
+    
+    if (classPropertiesString) {
+        [result appendFormat:@"\n\tProperties:\n%@", classPropertiesString];
+    }
+    
+    if (instancePropertiesString) {
+        if (classPropertiesString) {
+            [result appendFormat:@"\n%@", instancePropertiesString];
+        } else {
+            [result appendFormat:@"\n\tProperties:\n%@", instancePropertiesString];
+        }
+    }
+    
+    if (instanceMethodsString) {
+        [result appendFormat:@"\n\tInstance Methods:\n%@", instanceMethodsString];
+    }
+    
+    return [result copy];
 }
 
 @end
