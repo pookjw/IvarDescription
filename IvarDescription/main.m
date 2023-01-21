@@ -25,7 +25,7 @@
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
-        NSLog(@"%@", [NSAttributedString _fd__methodDescriptionForClass:NSAttributedString.class]);
+        NSLog(@"%@", [NSString _fd__methodDescriptionForClass:NSAttributedString.class]);
     }
     return 0;
 }

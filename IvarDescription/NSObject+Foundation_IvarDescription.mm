@@ -11,19 +11,19 @@
 @implementation NSObject (Foundation_IvarDescription)
 
 - (NSString *)_fd_shortMethodDescription {
-    NSString * _Nullable classMethods = [self _fd_methodsForClass:object_getClass(self.class) isClassType:YES];
-    NSString * _Nullable classProperties = [self _fd_propertiesForClass:object_getClass(self.class) isClassType:YES];
-    NSString * _Nullable instanceProperties = [self _fd_propertiesForClass:self.class isClassType:NO];
-    NSString * _Nullable instanceMethods = [self _fd_methodsForClass:self.class isClassType:NO];
+    NSString * _Nullable classMethodsString = [self _fd_methodsStringForClass:object_getClass(self.class) isClassType:YES];
+    NSString * _Nullable classPropertiesString = [self _fd_propertiesStringForClass:object_getClass(self.class) isClassType:YES];
+    NSString * _Nullable instancePropertiesString = [self _fd_propertiesStringForClass:self.class isClassType:NO];
+    NSString * _Nullable instanceMethodsString = [self _fd_methodsStringForClass:self.class isClassType:NO];
     
     NSString *description = [self _fd_descriptionForClass:self.class
-                                       classMethodsString:classMethods
-                                    classPropertiesString:classProperties
-                                 instancePropertiesString:instanceProperties
-                                    instanceMethodsString:instanceMethods];
+                                       classMethodsString:classMethodsString
+                                    classPropertiesString:classPropertiesString
+                                 instancePropertiesString:instancePropertiesString
+                                    instanceMethodsString:instanceMethodsString];
     
     if (self.superclass) {
-        return [NSString stringWithFormat:@"%@\n(%@ ...)", description, self.superclass];
+        return [NSString stringWithFormat:@"<%@: %p>:\n%@\n(%@ ...)", NSStringFromClass(self.class), self.class, description, self.superclass];
     } else {
         return description;
     }
@@ -36,13 +36,13 @@
 - (NSString *)_fd__methodDescriptionForClass:(Class)arg1 {
     Class loopClass = arg1;
     
-    NSMutableString *result = [NSMutableString string];
+    NSMutableString *result = [NSMutableString stringWithFormat:@"<%@: %p>:\n", arg1, arg1];
     
     while (loopClass) {
-        NSString * _Nullable classMethods = [self _fd_methodsForClass:object_getClass(loopClass) isClassType:YES];
-        NSString * _Nullable classProperties = [self _fd_propertiesForClass:object_getClass(loopClass) isClassType:YES];
-        NSString * _Nullable instanceProperties = [self _fd_propertiesForClass:loopClass isClassType:NO];
-        NSString * _Nullable instanceMethods = [self _fd_methodsForClass:loopClass isClassType:NO];
+        NSString * _Nullable classMethods = [self _fd_methodsStringForClass:object_getClass(loopClass) isClassType:YES];
+        NSString * _Nullable classProperties = [self _fd_propertiesStringForClass:object_getClass(loopClass) isClassType:YES];
+        NSString * _Nullable instanceProperties = [self _fd_propertiesStringForClass:loopClass isClassType:NO];
+        NSString * _Nullable instanceMethods = [self _fd_methodsStringForClass:loopClass isClassType:NO];
         
         NSString *description = [self _fd_descriptionForClass:loopClass
                                            classMethodsString:classMethods
@@ -53,14 +53,27 @@
         [result appendString:description];
         
         loopClass = loopClass.superclass;
+        
+        if (loopClass) {
+            [result appendString:@"\n"];
+        }
     }
     
     return [result copy];
 }
 
+- (NSString *)_fd_propertyDescription {
+    return [self _fd__propertyDescriptionForClass:self.class];
+}
+
+- (NSString *)_fd__propertyDescriptionForClass:(Class)arg1 {
+    NSMutableString *result = [NSMutableString stringWithFormat:@"<%@: %p>:\n", arg1, arg1];
+    return @"TODO";
+}
+
 #pragma mark - Helpers
 
-- (NSString * _Nullable)_fd_methodsForClass:(Class)arg1 isClassType:(BOOL)isClassType {
+- (NSString * _Nullable)_fd_methodsStringForClass:(Class)arg1 isClassType:(BOOL)isClassType {
     unsigned int *methodsCount = new unsigned int;
     Method *methods = class_copyMethodList(arg1, methodsCount);
     
@@ -122,7 +135,7 @@
     return [results copy];
 }
 
-- (NSString * _Nullable)_fd_propertiesForClass:(Class)arg1 isClassType:(BOOL)isClassType {
+- (NSString * _Nullable)_fd_propertiesStringForClass:(Class)arg1 isClassType:(BOOL)isClassType {
     unsigned int *propertiesCount = new unsigned int;
     objc_property_t *properties = class_copyPropertyList(arg1, propertiesCount);
     
@@ -282,7 +295,7 @@
 }
 
 - (NSString *)_fd_descriptionForClass:(Class)arg1 classMethodsString:(NSString * _Nullable)classMethodsString classPropertiesString:(NSString * _Nullable)classPropertiesString instancePropertiesString:(NSString *)instancePropertiesString instanceMethodsString:(NSString *)instanceMethodsString {
-    NSMutableString *result = [NSMutableString stringWithFormat:@"<%@: %p>:\nin %@:", arg1, arg1, arg1];
+    NSMutableString *result = [NSMutableString stringWithFormat:@"in %@:", NSStringFromClass(arg1)];
     
     if (classMethodsString) {
         [result appendFormat:@"\n\tClass Methods:\n%@", classMethodsString];
