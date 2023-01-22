@@ -36,7 +36,7 @@
 - (NSString *)_fd__methodDescriptionForClass:(Class)arg1 {
     Class loopClass = arg1;
     
-    NSMutableString *result = [NSMutableString stringWithFormat:@"%@\n", [self _fd_headerDescriptionForClass:arg1]];
+    NSMutableString *result = [[NSMutableString alloc] initWithFormat:@"%@\n", [self _fd_headerDescriptionForClass:arg1]];
     
     while (loopClass) {
         NSString * _Nullable classMethodsString = [self _fd_methodsStringForClass:object_getClass(loopClass) isClassType:YES];
@@ -59,7 +59,9 @@
         }
     }
     
-    return [result copy];
+    NSString *copy = [result copy];
+    [result release];
+    return [copy autorelease];
 }
 
 - (NSString *)_fd_propertyDescription {
@@ -67,7 +69,7 @@
 }
 
 - (NSString *)_fd__propertyDescriptionForClass:(Class)arg1 {
-    NSMutableString *result = [NSMutableString stringWithFormat:@"%@\n", [self _fd_headerDescriptionForClass:arg1]];
+    NSMutableString *result = [[NSMutableString alloc] initWithFormat:@"%@\n", [self _fd_headerDescriptionForClass:arg1]];
     Class loopClass = arg1;
     
     while (loopClass) {
@@ -87,7 +89,9 @@
         loopClass = loopClass.superclass;
     }
     
-    return [result copy];
+    NSString *copy = [result copy];
+    [result release];
+    return [copy autorelease];
 }
 
 - (NSString *)_fd_ivarDescription {
@@ -99,7 +103,7 @@
 }
 
 - (NSString *)_fd__protocolDescriptionForProtocol:(Protocol *)arg1 {
-    NSMutableString *result = [NSMutableString stringWithFormat:@"<%@: %p>", NSStringFromProtocol(arg1), arg1];
+    NSMutableString *result = [[NSMutableString alloc] initWithFormat:@"<%@: %p>", NSStringFromProtocol(arg1), arg1];
     
     //
     
@@ -235,7 +239,11 @@
     
     [result appendFormat:@"\n\n%@", description];
 
-    return [result copy];
+    //
+    
+    NSString *copy = [result copy];
+    [result release];
+    return [copy autorelease];
 }
 
 #pragma mark - Helpers
@@ -254,7 +262,7 @@
 
 - (NSString * _Nullable)_fd_methodsStringFromMethods:(Method *)methods count:(unsigned int)count isClassType:(BOOL)isClassType {
     NSString *prefix = isClassType ? @"+" : @"-";
-    NSMutableString *results = [NSMutableString string];
+    NSMutableString *results = [NSMutableString new];
     
     for (unsigned int methodIndex = 0; methodIndex < count; methodIndex++) {
         @autoreleasepool {
@@ -300,14 +308,16 @@
         }
     }
     
-    return [results copy];
+    NSString *copy = [results copy];
+    [results release];
+    return [copy autorelease];
 }
 
 - (NSString * _Nullable)_fd_methodsStringFromMethodDescriptions:(objc_method_description *)methodDescriptions count:(unsigned int)count isClassType:(BOOL)isClassType {
     if (count == 0) return nil;
     
     NSString *prefix = isClassType ? @"+" : @"-";
-    NSMutableString *results = [NSMutableString string];
+    NSMutableString *results = [NSMutableString new];
     
     for (unsigned int methodDescriptionIndex = 0; methodDescriptionIndex < count; methodDescriptionIndex++) {
         @autoreleasepool {
@@ -342,7 +352,9 @@
         
     }
     
-    return [results copy];
+    NSString *copy = [results copy];
+    [results release];
+    return [copy autorelease];
 }
 
 - (NSString * _Nullable)_fd_propertiesStringForClass:(Class)arg1 isClassType:(BOOL)isClassType {
@@ -359,7 +371,8 @@
 
 - (NSString * _Nullable)_fd_propertiesStringFromProperties:(objc_property_t *)properties count:(unsigned int)count isClassType:(BOOL)isClassType isOptionalType:(BOOL)isOptionalType {
     if (count == 0) return nil;
-    NSMutableString *results = [NSMutableString string];
+    
+    NSMutableString *results = [NSMutableString new];
     
     for (unsigned int propertyIndex = 0; propertyIndex < count; propertyIndex++) {
         @autoreleasepool {
@@ -435,7 +448,9 @@
         }
     }
     
-    return [results copy];
+    NSString *copy = [results copy];
+    [results release];
+    return [copy autorelease];
 }
 
 - (NSString *)_fd_decodedTypeFromEncodedType:(const char *)encodedType {
@@ -513,7 +528,7 @@
 }
 
 - (NSArray<NSString *> *)_fd_decodedTypesFromEncodedTypes:(const char *)encodedTypes {
-    NSMutableArray<NSString *> *results = [NSMutableArray<NSString *> array];
+    NSMutableArray<NSString *> *results = [NSMutableArray<NSString *> new];
     
     unsigned int startIndex = 0;
     
@@ -535,7 +550,9 @@
         }
     }
     
-    return [results copy];
+    NSArray<NSString *> *copy = [results copy];
+    [results release];
+    return [copy autorelease];
 }
 
 - (NSString *)_fd_headerDescriptionForClass:(Class)arg1 {
@@ -564,7 +581,7 @@
 }
 
 - (NSString *)_fd_descriptionForClassName:(NSString *)className classMethodsString:(NSString * _Nullable)classMethodsString classPropertiesString:(NSString * _Nullable)classPropertiesString instancePropertiesString:(NSString *)instancePropertiesString instanceMethodsString:(NSString *)instanceMethodsString {
-    NSMutableString *result = [NSMutableString stringWithFormat:@"in %@:", className];
+    NSMutableString *result = [[NSMutableString alloc] initWithFormat:@"in %@:", className];
     
     if (classMethodsString) {
         [result appendFormat:@"\n\tClass Methods:\n%@", classMethodsString];
@@ -586,7 +603,9 @@
         [result appendFormat:@"\n\tInstance Methods:\n%@", instanceMethodsString];
     }
     
-    return [result copy];
+    NSString *copy = [result copy];
+    [result release];
+    return [copy autorelease];
 }
 
 @end
