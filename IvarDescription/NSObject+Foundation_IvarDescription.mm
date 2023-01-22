@@ -68,7 +68,26 @@
 
 - (NSString *)_fd__propertyDescriptionForClass:(Class)arg1 {
     NSMutableString *result = [NSMutableString stringWithFormat:@"<%@: %p>:\n", arg1, arg1];
-    return @"TODO";
+    Class loopClass = arg1;
+    
+    while (loopClass) {
+        [result appendFormat:@"\nin %@:\n\tProperties:\n", loopClass];
+        
+        NSString * _Nullable classProperties = [self _fd_propertiesStringForClass:object_getClass(loopClass) isClassType:YES];
+        NSString * _Nullable instanceProperties = [self _fd_propertiesStringForClass:loopClass isClassType:NO];
+        
+        if (classProperties) {
+            [result appendFormat:@"%@\n", classProperties];
+        }
+        
+        if (instanceProperties) {
+            [result appendFormat:@"%@\n", instanceProperties];
+        }
+        
+        loopClass = loopClass.superclass;
+    }
+    
+    return [result copy];
 }
 
 #pragma mark - Helpers
