@@ -203,7 +203,7 @@
     } else if (optionalInstancePropertiesString) {
         intancePropertiesString = optionalInstancePropertiesString;
     }
-
+    
     //
     
     unsigned int *requiredInstanceMethodDescriptionsCount = new unsigned int;
@@ -228,7 +228,7 @@
     } else {
         instanceMethodsString = nil;
     }
-
+    
     //
     
     NSString *description = [self _fd_descriptionForClassName:NSStringFromProtocol(arg1)
@@ -238,7 +238,7 @@
                                         instanceMethodsString:instanceMethodsString];
     
     [result appendFormat:@"\n\n%@", description];
-
+    
     //
     
     NSString *copy = [result copy];
