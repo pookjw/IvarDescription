@@ -9,7 +9,7 @@
 #import "NSObject+Foundation_IvarDescription.h"
 
 @protocol TestProtocol <NSObject, NSTabViewDelegate>
-@optional @property (class) id string;
+@optional @property (class, retain) id string;
 @optional @property NSUInteger number;
 @property NSUInteger number2;
 - (id)foo;
