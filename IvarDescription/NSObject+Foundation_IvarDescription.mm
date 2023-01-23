@@ -7,6 +7,7 @@
 
 #import "NSObject+Foundation_IvarDescription.h"
 #import <objc/runtime.h>
+#import <Cocoa/Cocoa.h>
 
 @implementation NSObject (Foundation_IvarDescription)
 
@@ -95,11 +96,47 @@
 }
 
 - (NSString *)_fd_ivarDescription {
-    return [self _fd__ivarDescriptionForClass:self.class];
+    NSMutableString *result = [[NSMutableString alloc] initWithFormat:@"<%@: %p>:\n", NSStringFromClass(self.class), self];
+    
+    Class loopClass = self.class;
+    
+    while (loopClass) {
+        NSString *description = [self _fd__ivarDescriptionForClass:loopClass];
+        [result appendFormat:@"\n%@", description];
+        loopClass = loopClass.superclass;
+    }
+    
+    NSString *copy = [result copy];
+    [result release];
+    return [copy autorelease];
 }
 
 - (NSString *)_fd__ivarDescriptionForClass:(Class)arg1 {
-    return @"TODO";
+    unsigned int *ivarsCount = new unsigned int;
+    Ivar *ivars = class_copyIvarList(arg1, ivarsCount);
+    
+    NSMutableString *results = [[NSMutableString alloc] initWithFormat:@"in %@:", NSStringFromClass(arg1)];
+    
+    for (unsigned int ivarIndex = 0; ivarIndex < *ivarsCount; ivarIndex++) {
+        @autoreleasepool {
+            Ivar ivar = ivars[ivarIndex];
+            const char *name = ivar_getName(ivar);
+            const char *encodedType = ivar_getTypeEncoding(ivar);
+            uintptr_t base = reinterpret_cast<uintptr_t>(self);
+            ptrdiff_t offset = ivar_getOffset(ivar);
+            void *location = reinterpret_cast<void *>(base + offset);
+            
+            NSString *propertyString = [self _fd_propertyStringFromLocation:location name:name encodedType:encodedType];
+            [results appendFormat:@"\n%@", propertyString];
+        }
+    }
+    
+    delete ivarsCount;
+    delete ivars;
+    
+    NSString *copy = [results copy];
+    [results release];
+    return [copy autorelease];
 }
 
 - (NSString *)_fd__protocolDescriptionForProtocol:(Protocol *)arg1 {
@@ -145,7 +182,7 @@
     delete optionalClassMethodDescriptionsCount;
     delete optionalClassMethodDescriptions;
     
-    NSString * _Nullable classMethodsString;
+    NSString * __autoreleasing _Nullable classMethodsString;
     if (requiredClassMethodDescriptionsString && optionalClassMethodDescriptionsString) {
         classMethodsString = [NSString stringWithFormat:@"%@\n%@", requiredClassMethodDescriptionsString, optionalClassMethodDescriptionsString];
     } else if (requiredClassMethodDescriptionsString) {
@@ -170,7 +207,7 @@
     delete optionalClassPropertiesCount;
     delete optionalClassProperties;
     
-    NSString * _Nullable classPropertiesString;
+    NSString * __autoreleasing _Nullable classPropertiesString;
     if (requiredClassPropertiesString && optionalClassPropertiesString) {
         classPropertiesString = [NSString stringWithFormat:@"%@\n%@", requiredClassPropertiesString, optionalClassPropertiesString];
     } else if (requiredClassPropertiesString) {
@@ -195,7 +232,7 @@
     delete optionalInstancePropertiesCount;
     delete optionalInstanceProperties;
     
-    NSString * _Nullable intancePropertiesString = nil;
+    NSString * __autoreleasing _Nullable intancePropertiesString = nil;
     if (requiredInstancePropertiesString && optionalInstancePropertiesString) {
         intancePropertiesString = [NSString stringWithFormat:@"%@\n%@", requiredInstancePropertiesString, optionalInstancePropertiesString];
     } else if (requiredInstancePropertiesString) {
@@ -218,7 +255,7 @@
     delete optionalInstanceMethodDescriptionsCount;
     delete optionalInstanceMethodDescriptions;
     
-    NSString * _Nullable instanceMethodsString;
+    NSString * __autoreleasing _Nullable instanceMethodsString;
     if (requiredInstanceMethodDescriptionsString && optionalInstanceMethodDescriptionsString) {
         instanceMethodsString = [NSString stringWithFormat:@"%@\n%@", requiredInstanceMethodDescriptionsString, optionalInstanceMethodDescriptionsString];
     } else if (requiredInstanceMethodDescriptionsString) {
@@ -491,11 +528,11 @@
         return @"Class";
     } else if (strcmp(encodedType, @encode(SEL)) == 0) {
         return @"SEL";
-    } else if (strncmp("^", encodedType, 1) == 0) {
-        return [NSString stringWithFormat:@"%@*", [self _fd_decodedTypeFromEncodedType:encodedType + 1]];
+    } else if ('^' == encodedType[0]) {
+        return [NSString stringWithFormat:@"%@*", [self _fd_decodedTypeFromEncodedType:(encodedType + 1)]];
     } else if (strcmp(encodedType, "@?") == 0) {
         return @"^block";
-    } else if (strstr(encodedType, "@") && strstr(encodedType, "\"") && strstr(encodedType, "\"")) {
+    } else if (('@' == encodedType[0]) && ('"' == encodedType[1]) && ('"' == encodedType[strlen(encodedType) - 1])) {
         NSString *string = [NSString stringWithCString:encodedType encoding:NSUTF8StringEncoding];
         NSRange startRange = [string rangeOfString:@"\""];
         NSString *trimmedString = [string substringWithRange:NSMakeRange(startRange.location + startRange.length, string.length - (startRange.location + startRange.length))];
@@ -503,11 +540,11 @@
         NSString *typeName = [trimmedString substringWithRange:NSMakeRange(0, trimmedString.length - endRange.length)];
         
         return [NSString stringWithFormat:@"%@*", typeName];
-    } else if (strncmp("r", encodedType, 1) == 0) {
-        return [NSString stringWithFormat:@"const %@", [self _fd_decodedTypeFromEncodedType:encodedType + 1]];
-    } else if (strncmp("V", encodedType, 1) == 0) {
-        return [NSString stringWithFormat:@"oneway %@", [self _fd_decodedTypeFromEncodedType:encodedType + 1]];
-    } else if (strstr(encodedType, "{") && strstr(encodedType, "}")) {
+    } else if ('r' == encodedType[0]) {
+        return [NSString stringWithFormat:@"const %@", [self _fd_decodedTypeFromEncodedType:(encodedType + 1)]];
+    } else if ('V' == encodedType[0]) {
+        return [NSString stringWithFormat:@"oneway %@", [self _fd_decodedTypeFromEncodedType:(encodedType + 1)]];
+    } else if (('{' == encodedType[0]) && ('}' == encodedType[strlen(encodedType) - 1])) {
         if (strstr(encodedType, "=")) {
             NSString *string = [NSString stringWithCString:encodedType encoding:NSUTF8StringEncoding];
             NSRange startRange = [string rangeOfString:@"{"];
@@ -553,6 +590,86 @@
     NSArray<NSString *> *copy = [results copy];
     [results release];
     return [copy autorelease];
+}
+
+- (NSString *)_fd_propertyStringFromLocation:(void *)location name:(const char *)name encodedType:(const char *)encodedType {
+    NSString *typeName = [self _fd_decodedTypeFromEncodedType:encodedType];
+    NSString *valueString = [self _fd_valueStringFromLocation:location encodedType:encodedType];
+    
+    return [NSString stringWithFormat:@"\t%s (%@): %@", name, typeName, valueString];
+}
+
+- (NSString *)_fd_valueStringFromLocation:(void *)location encodedType:(const char *)encodedType {
+    if (strcmp(encodedType, @encode(char)) == 0) {
+        const char *valuePtr = static_cast<const char *>(location);
+        return [NSString stringWithFormat:@"%c", *valuePtr];
+    } else if (strcmp(encodedType, @encode(int)) == 0) {
+        const int *valuePtr = static_cast<const int *>(location);
+        return [NSString stringWithFormat:@"%d", *valuePtr];
+    } else if (strcmp(encodedType, @encode(short)) == 0) {
+        const short *valuePtr = static_cast<const short *>(location);
+        return [NSString stringWithFormat:@"%d", *valuePtr];
+    } else if (strcmp(encodedType, @encode(long)) == 0) {
+        const long *valuePtr = static_cast<const long *>(location);
+        return [NSString stringWithFormat:@"%ld", *valuePtr];
+    } else if (strcmp(encodedType, @encode(long long)) == 0) {
+        const long long *valuePtr = static_cast<const long long *>(location);
+        return [NSString stringWithFormat:@"%lld", *valuePtr];
+    } else if (strcmp(encodedType, @encode(unsigned char)) == 0) {
+        const unsigned char *valuePtr = static_cast<const unsigned char *>(location);
+        return [NSString stringWithFormat:@"%c", *valuePtr];
+    } else if (strcmp(encodedType, @encode(unsigned int)) == 0) {
+        const unsigned int *valuePtr = static_cast<const unsigned int *>(location);
+        return [NSString stringWithFormat:@"%d", *valuePtr];
+    } else if (strcmp(encodedType, @encode(unsigned short)) == 0) {
+        const unsigned short *valuePtr = static_cast<const unsigned short *>(location);
+        return [NSString stringWithFormat:@"%d", *valuePtr];
+    } else if (strcmp(encodedType, @encode(unsigned long)) == 0) {
+        const unsigned long *valuePtr = static_cast<const unsigned long *>(location);
+        return [NSString stringWithFormat:@"%ld", *valuePtr];
+    } else if (strcmp(encodedType, @encode(unsigned long long)) == 0) {
+        const unsigned long long *valuePtr = static_cast<const unsigned long long *>(location);
+        return [NSString stringWithFormat:@"%lld", *valuePtr];
+    } else if (strcmp(encodedType, @encode(float)) == 0) {
+        const float *valuePtr = static_cast<const float *>(location);
+        return [NSString stringWithFormat:@"%f", *valuePtr];
+    } else if (strcmp(encodedType, @encode(double)) == 0) {
+        const double *valuePtr = static_cast<const double *>(location);
+        return [NSString stringWithFormat:@"%f", *valuePtr];
+    } else if (strcmp(encodedType, @encode(_Bool)) == 0) {
+        const _Bool *valuePtr = static_cast<const _Bool *>(location);
+        return [NSString stringWithFormat:@"%@", (*valuePtr ? @"YES" : @"NO")];
+    } else if (strcmp(encodedType, @encode(void)) == 0) {
+        return @"(void)";
+    } else if (strcmp(encodedType, @encode(char *)) == 0) {
+        const char **valuePtr = static_cast<const char **>(location);
+        return [NSString stringWithCString:*valuePtr encoding:NSUTF8StringEncoding];
+    } else if (strcmp(encodedType, @encode(id)) == 0) {
+        const id *valuePtr = static_cast<const id *>(location);
+        return [NSString stringWithFormat:@"%@", *valuePtr];
+    } else if (strcmp(encodedType, @encode(Class)) == 0) {
+        const Class *valuePtr = static_cast<const Class *>(location);
+        return [NSString stringWithFormat:@"%@", NSStringFromClass(*valuePtr)];
+    } else if (strcmp(encodedType, @encode(SEL)) == 0) {
+        SEL *valuePtr = static_cast<SEL *>(location);
+        return NSStringFromSelector(*valuePtr);
+    } else if ('^' == encodedType[0]) {
+        const void **valuePtr = static_cast<const void **>(location);
+        const void *valueLocation = *valuePtr;
+        return [NSString stringWithFormat:@"%p -> %p", valuePtr, valueLocation];
+    } else if ('@' == encodedType[0]) {
+        id *valuePtr = static_cast<id *>(location);
+        return [NSString stringWithFormat:@"%@", *valuePtr];
+    } else if ('r' == encodedType[0]) {
+        return [self _fd_valueStringFromLocation:location encodedType:(encodedType + 1)];
+    } else if ('V' == encodedType[0]) {
+        return [self _fd_valueStringFromLocation:location encodedType:(encodedType + 1)];
+    } else if (('{' == encodedType[0]) && ('}' == encodedType[strlen(encodedType) - 1])) {
+        // TODO
+        return @"Not representable";
+    } else {
+        return @"Not representable";
+    }
 }
 
 - (NSString *)_fd_headerDescriptionForClass:(Class)arg1 {

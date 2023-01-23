@@ -39,10 +39,43 @@
 
 @end
 
+struct NextFlags {
+    void *ptr;
+};
+
+struct MyFlags {
+    unsigned int _id;
+    BOOL enabled;
+    NSString *text;
+//    struct NextFlags nf;
+};
+
+@interface MyObject : NSObject
+@property struct MyFlags flags;
+@property NSString *text;
+@property CGSize rect;
+@property NSUInteger *ptr;
+@property Class protoClass;
+@property (nonatomic, copy) NSUInteger (^blockName)(CGSize);
+@end
+
+@implementation MyObject
+@end
+
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
 //        NSLog(@"%@", [NSString _fd_shortMethodDescription]);
-        NSLog(@"%@", [NSObject _fd__protocolDescriptionForProtocol:@protocol(TestProtocol)]);
+//        NSLog(@"%@", [NSObject _fd__protocolDescriptionForProtocol:@protocol(TestProtocol)]);
+        MyObject *view = [MyObject new];
+//        view.ptr = malloc(sizeof(NSUInteger));
+//        view.blockName = ^NSUInteger(CGSize) {
+//            return 3;
+//        };
+//        NSLog(@"%@", [view _fd__ivarDescriptionForClass:NSView.class]);
+        view.protoClass = NSView.class;
+        NSLog(@"%@", [view _fd_ivarDescription]);
+//        free(view.ptr);
+        [view release];
     }
     return 0;
 }
