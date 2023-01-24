@@ -47,15 +47,16 @@ struct MyFlags {
     unsigned int _id;
     BOOL enabled;
     NSString *text;
-//    struct NextFlags nf;
+    struct NextFlags nf;
 };
 
 @interface MyObject : NSObject
+@property Class protoClass;
 @property struct MyFlags flags;
 @property NSString *text;
 @property CGSize rect;
 @property NSUInteger *ptr;
-@property Class protoClass;
+@property NSUInteger number;
 @property (nonatomic, copy) NSUInteger (^blockName)(CGSize);
 @end
 
@@ -67,6 +68,7 @@ int main(int argc, const char * argv[]) {
 //        NSLog(@"%@", [NSString _fd_shortMethodDescription]);
 //        NSLog(@"%@", [NSObject _fd__protocolDescriptionForProtocol:@protocol(TestProtocol)]);
         MyObject *view = [MyObject new];
+        view.text = @"Test";
 //        view.ptr = malloc(sizeof(NSUInteger));
 //        view.blockName = ^NSUInteger(CGSize) {
 //            return 3;

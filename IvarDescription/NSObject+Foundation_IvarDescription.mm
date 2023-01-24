@@ -596,7 +596,7 @@
     NSString *typeName = [self _fd_decodedTypeFromEncodedType:encodedType];
     NSString *valueString = [self _fd_valueStringFromLocation:location encodedType:encodedType];
     
-    return [NSString stringWithFormat:@"\t%s (%@): %@", name, typeName, valueString];
+    return [NSString stringWithFormat:@"\t%s <%p> (%@): %@", name, location, typeName, valueString];
 }
 
 - (NSString *)_fd_valueStringFromLocation:(void *)location encodedType:(const char *)encodedType {
@@ -648,8 +648,8 @@
         const id *valuePtr = static_cast<const id *>(location);
         return [NSString stringWithFormat:@"%@", *valuePtr];
     } else if (strcmp(encodedType, @encode(Class)) == 0) {
-        const Class *valuePtr = static_cast<const Class *>(location);
-        return [NSString stringWithFormat:@"%@", NSStringFromClass(*valuePtr)];
+        const id value = static_cast<const id>(location);
+        return NSStringFromClass([value class]);
     } else if (strcmp(encodedType, @encode(SEL)) == 0) {
         SEL *valuePtr = static_cast<SEL *>(location);
         return NSStringFromSelector(*valuePtr);
@@ -665,8 +665,8 @@
     } else if ('V' == encodedType[0]) {
         return [self _fd_valueStringFromLocation:location encodedType:(encodedType + 1)];
     } else if (('{' == encodedType[0]) && ('}' == encodedType[strlen(encodedType) - 1])) {
-        // TODO
-        return @"Not representable";
+        NSLog(@"%s", encodedType);
+        return @"TODO";
     } else {
         return @"Not representable";
     }
