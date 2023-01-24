@@ -7,7 +7,7 @@ Backporting `NSObject(IvarDescription)` category which is bundled in UIKit. Writ
 
 ## Motivation
 
-UIKit provides debugging methods in `IvarDescription` category by internally below:
+UIKit provides debugging methods in `NSObject(IvarDescription)` category by internally below:
 
 ```objc
 @interface NSObject (IvarDescription)
@@ -56,7 +56,7 @@ in TestObject:
 (NSObject ...)
 ```
 
-I'm not reinventing the wheel. Again, it's bundled in UIKit. If you are handling non-UIKit projects like Cocoa or Linux envrionments, you cannot use these cool tools. To use these I have to backport using [Objective-C Runtime](https://developer.apple.com/documentation/objectivec/objective-c_runtime).
+I've backported `NSObject(IvarDescription)` from the beginning. I'm not reinventing the wheel. Again, it's bundled in UIKit. If you are handling non-UIKit projects like Cocoa or Linux envrionments, you cannot use these cool tools. To use these I have to backport using [Objective-C Runtime](https://developer.apple.com/documentation/objectivec/objective-c_runtime).
 
 OK, Enough.
 
