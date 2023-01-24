@@ -162,7 +162,7 @@
     unsigned int *protocolsCount = new unsigned int;
     Protocol * __unsafe_unretained _Nonnull *protocols = protocol_copyProtocolList(arg1, protocolsCount);
     
-    if (protocolsCount) {
+    if (*protocolsCount) {
         [result appendString:@" ("];
         
         for (unsigned int protocolIndex = 0; protocolIndex < *protocolsCount; protocolIndex++) {
