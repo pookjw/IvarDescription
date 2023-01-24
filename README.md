@@ -19,7 +19,7 @@ UIKit provides debugging methods in `IvarDescription` category by internally bel
 @end
 ```
 
-Briefly speaking: I'll explain about `-[NSObject(IvarDescription) _shortMethodDescription]`. Let's define a sample object like below:
+Briefly speaking: I'll explain about `-[NSObject(IvarDescription) _shortMethodDescription]`. Let's define the sample object like below:
 
 ```objc
 @interface TestObject : NSObject <NSStreamDelegate>
@@ -334,7 +334,7 @@ It dumps descriptions of input protocol. It cannot distinguish between required 
 
 - Dumping Class/Instance Methods.
 
-Assume sample protocol like below:
+Define the sample protocol like below:
 
 ```objc
 @protocol TestProtocol <NSObject, NSTabViewDelegate>
