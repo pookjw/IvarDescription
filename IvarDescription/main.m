@@ -17,24 +17,22 @@
 - (NSUInteger)foo2:(NSUInteger)a1 a2:(CGRect)a2 a3:(CGSize)a3;
 @end
 
-@interface TestObject : NSObject <TestProtocol>
-@property NSUInteger number;
-- (id)foo;
+@interface TestObject : NSObject <NSStreamDelegate>
+@property (class, weak) id<NSStreamDelegate> delegate;
+@property (copy) NSNumber *number;
+@property (assign, getter=isEnabled) BOOL enabled;
++ (void)foo;
+- (id)foo:(NSUInteger *)foo name:(NSString *)name error:(NSError * __autoreleasing * _Nullable)error;
 @end
 
 @implementation TestObject
 
-+ (id)string { return @""; }
-+ (void)setString:(id)string {}
-
-- (NSUInteger)number {
-    return 0;
-}
-- (void)setNumber:(NSUInteger)number {
++ (void)foo {
     
 }
-- (id)foo {
-    return @"";
+
+- (id)foo:(NSUInteger *)foo name:(NSString *)name error:(NSError **)error {
+    return nil;
 }
 
 @end
@@ -66,7 +64,7 @@ struct MyFlags {
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
-//        NSLog(@"%@", [NSString _fd_shortMethodDescription]);
+        NSLog(@"%@", [TestObject _fd_methodDescription]);
 //        NSLog(@"%@", [NSObject _fd__protocolDescriptionForProtocol:@protocol(TestProtocol)]);
         MyObject *view = [MyObject new];
         view.text = @"Test";
@@ -75,8 +73,8 @@ int main(int argc, const char * argv[]) {
 //            return 3;
 //        };
 //        NSLog(@"%@", [view _fd__ivarDescriptionForClass:NSView.class]);
-        view.protoClass = NSURL.class;
-        NSLog(@"%@", [view _fd_ivarDescription]);
+//        view.protoClass = NSURL.class;
+//        NSLog(@"%@", [view _fd_ivarDescription]);
 //        free(view.ptr);
 //        [view release];
     }
