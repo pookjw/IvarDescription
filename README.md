@@ -56,15 +56,15 @@ in TestObject:
 (NSObject ...)
 ```
 
-Again, it's bundled in UIKit. If you are handling non-UIKit projects like Cocoa or Linux envrionments, you cannot use these cool tools. To use these I have to backport these methods using [Objective-C Runtime](https://developer.apple.com/documentation/objectivec/objective-c_runtime).
+Again, it's bundled in UIKit. If you are handling non-UIKit projects like Cocoa or Linux envrionments, you cannot use these cool tools. To use these I have to backport using [Objective-C Runtime](https://developer.apple.com/documentation/objectivec/objective-c_runtime).
 
 OK, Enough.
 
 ## Limitations
 
-- All specifications of [Type Encodings](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html) are not supported. `An array`, `A union` types are not implemented yet. 
+- All specifications of [Type Encodings](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html) are not supported. (e.g. `An array`, `A union` types are not implemented yet.)
 
-- Objects eligible for GCC are not supported.
+- Objects eligible for GCC are not supported. (It's 2023... is it needed?)
 
 - Dumping data layouts for struct type is not implemented yet. `IvarDescription` supports dumping struct type restrictively.
 
