@@ -14,6 +14,8 @@ UIKit provides debugging methods in `NSObject(IvarDescription)` category interna
 - (id)_shortMethodDescription;
 - (id)_methodDescription;
 - (id)__methodDescriptionForClass:(Class)arg1;
+- (id)_propertyDescription;
+- (id)__propertyDescriptionForClass:(Class)arg1;
 - (id)_ivarDescription;
 - (id)__ivarDescriptionForClass:(Class)arg1;
 @end
