@@ -66,11 +66,11 @@ OK, Enough.
 
 - Objects eligible for GCC are not supported. (It's 2023... is it needed?)
 
-- Dumping data layouts for struct type is not implemented yet. `IvarDescription` supports dumping struct type restrictively.
+- Dumping data layouts for struct type is not implemented yet. `IvarDescription` supports dumping struct type restrictively, but I want to implement perferctly soon.
 
 ## Usages
 
-My `Foundation_IvarDescriptions` provides 7 methods - dumping methods/properties/ivars description. Also it supports dumping Objective-C Protocols which is not supported in `IvarDescriptions`!
+My `Foundation_IvarDescriptions` provides 8 methods - dumping methods/properties/ivars description. Also it supports dumping Objective-C Protocols which is not supported in `IvarDescriptions`!
 
 ```objc
 @interface NSObject (Foundation_IvarDescription)
