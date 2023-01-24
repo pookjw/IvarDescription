@@ -70,7 +70,7 @@ OK, Enough.
 
 ## Usages
 
-My `Foundation_IvarDescriptions` provides 8 methods - dumping methods/properties/ivars description. Also it supports dumping Objective-C Protocols which is not supported in `IvarDescriptions`!
+My `Foundation_IvarDescriptions` provides total 8 methods - dumping methods/properties/ivars description. Also it supports dumping Objective-C Protocols which is not supported in `IvarDescriptions`!
 
 ```objc
 @interface NSObject (Foundation_IvarDescription)
