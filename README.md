@@ -33,7 +33,7 @@ Briefly speaking: I'll explain about `-[NSObject(IvarDescription) _shortMethodDe
 @end
 ```
 
-Here's the result of `[TestObject _shortMethodDescription]`. It dumps all property and methods declarations, including all private declarations. Also it gives address of `IMP` - it is useful when you are setting breakpoints based on address or dumping assembly.
+Here's the result of `[TestObject _shortMethodDescription]`. It dumps all property and method declarations, including all private declarations. Also it gives address of `IMP` - it is useful when you are setting breakpoints based on address or dumping assembly.
 
 ```
 (lldb) expression -l objc -O -- [TestObject _shortMethodDescription]
