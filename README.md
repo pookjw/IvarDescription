@@ -7,7 +7,7 @@ Backporting `NSObject(IvarDescription)` category which is bundled in UIKit. Writ
 
 ## Motivation
 
-UIKit provides debugging methods in `NSObject(IvarDescription)` category by internally below:
+UIKit provides debugging methods in `NSObject(IvarDescription)` category internally:
 
 ```objc
 @interface NSObject (IvarDescription)
