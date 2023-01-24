@@ -1,6 +1,6 @@
 # Foundation_IvarDescription
 
-Backporting `-[NSObject(IvarDescription) *]` methods which are bundled in UIKit. Written in Objective-C++ with supporting ARC/MRC.
+Backporting `NSObject(IvarDescription)` category which is bundled in UIKit. Written in Objective-C++ with supporting ARC/MRC.
 
 - [NSObject+Foundation_IvarDescription.h](IvarDescription/NSObject+Foundation_IvarDescription.h)
 - [NSObject+Foundation_IvarDescription.mm](IvarDescription/NSObject+Foundation_IvarDescription.mm)
