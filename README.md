@@ -56,7 +56,7 @@ in TestObject:
 (NSObject ...)
 ```
 
-Again, it's bundled in UIKit. If you are handling non-UIKit projects like Cocoa or Linux envrionments, you cannot use these cool tools. To use these I have to backport using [Objective-C Runtime](https://developer.apple.com/documentation/objectivec/objective-c_runtime).
+I'm not reinventing the wheel. Again, it's bundled in UIKit. If you are handling non-UIKit projects like Cocoa or Linux envrionments, you cannot use these cool tools. To use these I have to backport using [Objective-C Runtime](https://developer.apple.com/documentation/objectivec/objective-c_runtime).
 
 OK, Enough.
 
