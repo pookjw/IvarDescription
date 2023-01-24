@@ -64,7 +64,9 @@ struct MyFlags {
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
-        NSLog(@"%@", [TestObject _fd_methodDescription]);
+//        NSLog(@"%@", [NSObject _fd__methodDescriptionForClass:TestObject.class]);
+        NSLog(@"%@", [NSObject _fd__protocolDescriptionForProtocol:@protocol(TestProtocol)]);
+        
 //        NSLog(@"%@", [NSObject _fd__protocolDescriptionForProtocol:@protocol(TestProtocol)]);
         MyObject *view = [MyObject new];
         view.text = @"Test";
