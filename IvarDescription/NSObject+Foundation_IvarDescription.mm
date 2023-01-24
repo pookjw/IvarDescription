@@ -1,5 +1,5 @@
 //
-//  NSObject+Foundation_IvarDescription.m
+//  NSObject+Foundation_IvarDescription.mm
 //  IvarDescription
 //
 //  Created by Jinwoo Kim on 1/17/23.
@@ -7,7 +7,6 @@
 
 #import "NSObject+Foundation_IvarDescription.h"
 #import <objc/runtime.h>
-#import <Cocoa/Cocoa.h>
 
 @implementation NSObject (Foundation_IvarDescription)
 
