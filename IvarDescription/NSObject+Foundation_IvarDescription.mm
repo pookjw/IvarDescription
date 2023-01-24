@@ -389,7 +389,7 @@
             NSString *returnType = arguments[0];
             NSMutableString *result = [NSMutableString stringWithFormat:@"\t\t%@ (%@)", prefix, returnType];
             
-            if (arguments.count == 2) {
+            if (arguments.count == 3) {
                 [result appendFormat:@" %@", name];
             } else {
                 [[name componentsSeparatedByString:@":"] enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -398,7 +398,7 @@
                         return;
                     }
                     
-                    [result appendFormat:@" %@:(%@)arg%lu", obj, arguments[idx + 2], idx + 1];
+                    [result appendFormat:@" %@:(%@)arg%lu", obj, arguments[idx + 3], idx + 1];
                 }];
             }
             
@@ -598,11 +598,16 @@
 - (NSArray<NSString *> *)_fd_decodedTypesFromEncodedTypes:(const char *)encodedTypes {
     NSMutableArray<NSString *> *results = [NSMutableArray<NSString *> new];
     
+    // Index of type name.
     unsigned int startIndex = 0;
+    
+    // Prevents duplication when number repeats sequentially.
+    // startIndex also can prevent duplication by checking (startIndex == 0). But when do that the first type cannot be parsed.
+    BOOL didParse = NO;
     
     for (unsigned int index = 0; index < strlen(encodedTypes); index++) {
         if (isdigit(static_cast<int>(encodedTypes[index]))) {
-            if (startIndex == 0) continue;
+            if (didParse) continue;
             
             size_t size = index - startIndex;
             char *encodedType = new char[size];
@@ -611,9 +616,11 @@
             delete[] encodedType;
             
             startIndex = 0;
+            didParse = YES;
         } else {
             if (startIndex == 0) {
                 startIndex = index;
+                didParse = NO;
             }
         }
     }

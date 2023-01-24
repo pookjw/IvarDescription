@@ -64,12 +64,12 @@ struct MyFlags {
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
-        NSLog(@"%@", [NSObject _fd__methodDescriptionForClass:TestObject.class]);
+//        NSLog(@"%@", [NSObject _fd__methodDescriptionForClass:TestObject.class]);
 //        NSLog(@"%@", [NSObject _fd__protocolDescriptionForProtocol:@protocol(TestProtocol)]);
         
-//        NSLog(@"%@", [NSObject _fd__protocolDescriptionForProtocol:@protocol(TestProtocol)]);
-        MyObject *view = [MyObject new];
-        view.text = @"Test";
+        NSLog(@"%@", [NSObject _fd__protocolDescriptionForProtocol:@protocol(TestProtocol)]);
+//        MyObject *view = [MyObject new];
+//        view.text = @"Test";
 //        view.ptr = malloc(sizeof(NSUInteger));
 //        view.blockName = ^NSUInteger(CGSize) {
 //            return 3;

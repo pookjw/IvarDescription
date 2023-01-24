@@ -347,25 +347,25 @@ Define the sample protocol like below:
 @end
 ```
 
-Here's the output of dumping `TestProtocol` with `_fd__ivarDescriptionForClass:`:
+Here's the output of dumping `TestProtocol` with `_fd__protocolDescriptionForProtocol:`:
 
 ```
-<TestProtocol: 0x10000ccb0> (NSObject, NSTabViewDelegate) :
+<TestProtocol: 0x10000cca8> (NSObject, NSTabViewDelegate) :
 
 in TestProtocol:
     Class Methods:
         + (id) foo:(void)arg1 a2:(long)arg2;
         + (id) string;
-        + (id) setString:(id)arg1;
+        + (void) setString:(id)arg1;
     Properties:
         @property (class, retain) id string;
         @property unsigned long number;
         @property unsigned long number2;
     Instance Methods:
-        - (id) foo2:(unsigned long)arg1 a2:(struct CGRect)arg2 a3:(struct CGSize)arg3;
-        - (id) number2;
-        - (id) setNumber2:(unsigned long)arg1;
-        - (id) number;
-        - (id) setNumber:(unsigned long)arg1;
+        - (unsigned long) foo2:(unsigned long)arg1 a2:(struct CGRect)arg2 a3:(struct CGSize)arg3;
+        - (unsigned long) number2;
+        - (void) setNumber2:(unsigned long)arg1;
+        - (unsigned long) number;
+        - (void) setNumber:(unsigned long)arg1;
         - (id) foo;
 ```
