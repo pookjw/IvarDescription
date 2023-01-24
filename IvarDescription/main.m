@@ -45,6 +45,7 @@ struct NextFlags {
 
 struct MyFlags {
     unsigned int _id;
+    unsigned int a : 20;
     BOOL enabled;
     NSString *text;
     struct NextFlags nf;
@@ -74,10 +75,10 @@ int main(int argc, const char * argv[]) {
 //            return 3;
 //        };
 //        NSLog(@"%@", [view _fd__ivarDescriptionForClass:NSView.class]);
-        view.protoClass = NSView.class;
+        view.protoClass = NSURL.class;
         NSLog(@"%@", [view _fd_ivarDescription]);
 //        free(view.ptr);
-        [view release];
+//        [view release];
     }
     return 0;
 }

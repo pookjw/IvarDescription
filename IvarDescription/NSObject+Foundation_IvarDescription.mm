@@ -61,8 +61,12 @@
     }
     
     NSString *copy = [result copy];
+#if __has_feature(objc_arc)
+    return copy;
+#else
     [result release];
     return [copy autorelease];
+#endif
 }
 
 - (NSString *)_fd_propertyDescription {
@@ -91,8 +95,12 @@
     }
     
     NSString *copy = [result copy];
+#if __has_feature(objc_arc)
+    return copy;
+#else
     [result release];
     return [copy autorelease];
+#endif
 }
 
 - (NSString *)_fd_ivarDescription {
@@ -107,8 +115,12 @@
     }
     
     NSString *copy = [result copy];
+#if __has_feature(objc_arc)
+    return copy;
+#else
     [result release];
     return [copy autorelease];
+#endif
 }
 
 - (NSString *)_fd__ivarDescriptionForClass:(Class)arg1 {
@@ -135,8 +147,12 @@
     delete ivars;
     
     NSString *copy = [results copy];
+#if __has_feature(objc_arc)
+    return copy;
+#else
     [results release];
     return [copy autorelease];
+#endif
 }
 
 - (NSString *)_fd__protocolDescriptionForProtocol:(Protocol *)arg1 {
@@ -279,8 +295,12 @@
     //
     
     NSString *copy = [result copy];
+#if __has_feature(objc_arc)
+    return copy;
+#else
     [result release];
     return [copy autorelease];
+#endif
 }
 
 #pragma mark - Helpers
@@ -346,8 +366,12 @@
     }
     
     NSString *copy = [results copy];
+#if __has_feature(objc_arc)
+    return copy;
+#else
     [results release];
     return [copy autorelease];
+#endif
 }
 
 - (NSString * _Nullable)_fd_methodsStringFromMethodDescriptions:(objc_method_description *)methodDescriptions count:(unsigned int)count isClassType:(BOOL)isClassType {
@@ -390,8 +414,12 @@
     }
     
     NSString *copy = [results copy];
+#if __has_feature(objc_arc)
+    return copy;
+#else
     [results release];
     return [copy autorelease];
+#endif
 }
 
 - (NSString * _Nullable)_fd_propertiesStringForClass:(Class)arg1 isClassType:(BOOL)isClassType {
@@ -486,8 +514,12 @@
     }
     
     NSString *copy = [results copy];
+#if __has_feature(objc_arc)
+    return copy;
+#else
     [results release];
     return [copy autorelease];
+#endif
 }
 
 - (NSString *)_fd_decodedTypeFromEncodedType:(const char *)encodedType {
@@ -588,8 +620,12 @@
     }
     
     NSArray<NSString *> *copy = [results copy];
+#if __has_feature(objc_arc)
+    return copy;
+#else
     [results release];
     return [copy autorelease];
+#endif
 }
 
 - (NSString *)_fd_propertyStringFromLocation:(void *)location name:(const char *)name encodedType:(const char *)encodedType {
@@ -648,7 +684,7 @@
         const id *valuePtr = static_cast<const id *>(location);
         return [NSString stringWithFormat:@"%@", *valuePtr];
     } else if (strcmp(encodedType, @encode(Class)) == 0) {
-        const id value = static_cast<const id>(location);
+        const id value = (__bridge const id)location;
         return NSStringFromClass([value class]);
     } else if (strcmp(encodedType, @encode(SEL)) == 0) {
         SEL *valuePtr = static_cast<SEL *>(location);
@@ -658,15 +694,14 @@
         const void *valueLocation = *valuePtr;
         return [NSString stringWithFormat:@"%p -> %p", valuePtr, valueLocation];
     } else if ('@' == encodedType[0]) {
-        id *valuePtr = static_cast<id *>(location);
+        const id *valuePtr = static_cast<const id *>(location);
         return [NSString stringWithFormat:@"%@", *valuePtr];
     } else if ('r' == encodedType[0]) {
         return [self _fd_valueStringFromLocation:location encodedType:(encodedType + 1)];
     } else if ('V' == encodedType[0]) {
         return [self _fd_valueStringFromLocation:location encodedType:(encodedType + 1)];
     } else if (('{' == encodedType[0]) && ('}' == encodedType[strlen(encodedType) - 1])) {
-        NSLog(@"%s", encodedType);
-        return @"TODO";
+        return @"(TODO - parsing layouts for struct type)";
     } else {
         return @"Not representable";
     }
@@ -721,8 +756,12 @@
     }
     
     NSString *copy = [result copy];
+#if __has_feature(objc_arc)
+    return copy;
+#else
     [result release];
     return [copy autorelease];
+#endif
 }
 
 @end
