@@ -68,7 +68,7 @@ OK, Enough.
 
 - Objects eligible for GCC are not supported. (It's 2023... is it needed?)
 
-- Dumping data layouts for struct type is not implemented yet. `IvarDescription` supports dumping struct type restrictively, but I want to implement perferctly soon. It's theoretically implementable.
+- Dumping data layouts for struct type is not implemented yet. `NSObject(IvarDescription)` supports dumping struct type restrictively, but I want to implement perferctly soon. It's theoretically implementable.
 
 ## Usages
 
