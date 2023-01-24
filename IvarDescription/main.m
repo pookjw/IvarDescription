@@ -21,13 +21,13 @@
 @property (class, weak) id<NSStreamDelegate> delegate;
 @property (copy) NSNumber *number;
 @property (assign, getter=isEnabled) BOOL enabled;
-+ (void)foo;
++ (oneway void)foo;
 - (id)foo:(NSUInteger *)foo name:(NSString *)name error:(NSError * __autoreleasing * _Nullable)error;
 @end
 
 @implementation TestObject
 
-+ (void)foo {
++ (oneway void)foo {
     
 }
 
@@ -64,8 +64,8 @@ struct MyFlags {
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
-//        NSLog(@"%@", [NSObject _fd__methodDescriptionForClass:TestObject.class]);
-        NSLog(@"%@", [NSObject _fd__protocolDescriptionForProtocol:@protocol(TestProtocol)]);
+        NSLog(@"%@", [NSObject _fd__methodDescriptionForClass:TestObject.class]);
+//        NSLog(@"%@", [NSObject _fd__protocolDescriptionForProtocol:@protocol(TestProtocol)]);
         
 //        NSLog(@"%@", [NSObject _fd__protocolDescriptionForProtocol:@protocol(TestProtocol)]);
         MyObject *view = [MyObject new];

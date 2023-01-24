@@ -105,7 +105,7 @@ Backport of `-[NSObject(IvarDescription) _shortMethodDescription]`. Only dumps c
 
 in TestObject:
     Class Methods:
-        + (void) foo; (0x100003028)
+        + (oneway void) foo; (0x100003028)
     Properties:
         @property (class, weak) <NSStreamDelegate>* delegate;
         @property (copy) NSNumber* number;
@@ -141,7 +141,7 @@ Backport of `-[NSObject(IvarDescription) _methodDescription]`. It dumps descript
 
 in TestObject:
     Class Methods:
-        + (void) foo; (0x100003028)
+        + (oneway void) foo; (0x100003028)
     Properties:
         @property (class, weak) <NSStreamDelegate>* delegate;
         @property (copy) NSNumber* number;
@@ -189,7 +189,7 @@ Backport of `-[NSObject(IvarDescription) _methodDescriptionForClass:]`. It dumps
 
 in TestObject:
     Class Methods:
-        + (void) foo; (0x100003028)
+        + (oneway void) foo; (0x100003028)
     Properties:
         @property (class, weak) <NSStreamDelegate>* delegate;
         @property (copy) NSNumber* number;
