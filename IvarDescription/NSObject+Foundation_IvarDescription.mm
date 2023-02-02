@@ -522,7 +522,7 @@
 }
 
 - (NSString *)_fd_decodedTypeFromEncodedType:(const char *)encodedType {
-    if (sizeof(encodedType)) return @"(unknown)";
+    if (sizeof(encodedType) == 0) return @"(unknown)";
     
     // https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html
     if (strcmp(encodedType, @encode(char)) == 0) {
