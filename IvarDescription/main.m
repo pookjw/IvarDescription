@@ -6,6 +6,8 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <CoreData/CoreData.h>
+#import <objc/runtime.h>
 #import "NSObject+Foundation_IvarDescription.h"
 
 @protocol TestProtocol <NSObject, NSTabViewDelegate>
@@ -68,17 +70,19 @@ int main(int argc, const char * argv[]) {
 //        NSLog(@"%@", [NSObject _fd__protocolDescriptionForProtocol:@protocol(TestProtocol)]);
         
 //        NSLog(@"%@", [NSObject _fd__protocolDescriptionForProtocol:@protocol(TestProtocol)]);
-        MyObject *view = [MyObject new];
+//        MyObject *view = [MyObject new];
 //        view.text = @"Test";
 //        view.ptr = malloc(sizeof(NSUInteger));
 //        view.blockName = ^NSUInteger(CGSize) {
 //            return 3;
 //        };
-        NSLog(@"%@", [view _fd_ivarDescription]);
+//        NSLog(@"%@", [view _fd_ivarDescription]);
 //        view.protoClass = NSURL.class;
 //        NSLog(@"%@", [view _fd_ivarDescription]);
 //        free(view.ptr);
-        [view release];
+//        [view release];
+        
+        NSLog(@"%@", [NSObject _fd__ivarDescriptionForClass:(Class)NSClassFromString(@"PFCloudKitStoreComparer")]);
     }
     return 0;
 }
