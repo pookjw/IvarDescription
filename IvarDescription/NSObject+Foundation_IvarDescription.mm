@@ -353,7 +353,7 @@
                 if (_components.count > 0) {
                     NSArray<NSString *> *components = [_components objectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, _components.count - 1)]];
                     [components enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                        [result appendFormat:@" %@:(%@)arg%lu", obj, arguments[idx + 3], idx + 1];
+                        [result appendFormat:@" %@:(%@)arg%lu", obj, arguments[idx + 2], idx + 1];
                     }];
                 }
             }
