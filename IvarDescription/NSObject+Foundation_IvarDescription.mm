@@ -353,7 +353,11 @@
                 if (_components.count > 0) {
                     NSArray<NSString *> *components = [_components objectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, _components.count - 1)]];
                     [components enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                        [result appendFormat:@" %@:(%@)arg%lu", obj, arguments[idx + 2], idx + 1];
+                        if ((idx + 2) < arguments.count) {
+                            [result appendFormat:@" %@:(%@)arg%lu", obj, arguments[idx + 2], idx + 1];
+                        } else {
+                            [result appendFormat:@" %@:(%@)arg%lu", obj, @"", idx + 1];
+                        }
                     }];
                 }
             }
@@ -596,7 +600,12 @@
             return [self _fd_decodedTypeFromEncodedType:splited];
         }
     } else {
-        return [NSString stringWithCString:encodedType encoding:NSUTF8StringEncoding];
+        NSString * _Nullable result = [NSString stringWithCString:encodedType encoding:NSUTF8StringEncoding];
+        if (result == nil) {
+            return @"(unknown)";
+        } else {
+            return result;
+        }
     }
 }
 
